@@ -1,0 +1,10 @@
+#svgRoot {
+    position: absolute;
+    z-index: 114514; 
+    left: 0;
+    top: 0;
+}
+
+body {
+    touch-action: none;
+}
