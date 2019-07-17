@@ -55,7 +55,8 @@ export class SVGCanvas {
   };
 
   handleDown = (event: PointerEvent) => {
-    event.preventDefault();
+    //下のレイヤーにもイベントを通したい
+    //event.preventDefault();
     if (event.pointerType === "pen") {
         //canvasのpointer-eventのnoneを解除
 

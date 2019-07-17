@@ -103,8 +103,9 @@ function handelDlButton() {
   dlLink.click();
 }
 
+
 function handleKeyPress(event: KeyboardEvent) {
-  if (event.key === "z") {
+  if (event.key === "z" && event.ctrlKey) {
     /*Undo HotKey*/
     handleUndo();
   } else if (event.key === "z" && event.shiftKey) {
