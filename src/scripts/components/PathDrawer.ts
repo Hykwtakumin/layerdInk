@@ -9,8 +9,8 @@ export type Points = {
     let rect = event.srcElement.getBoundingClientRect();
     let dx = rect.left + window.pageXOffset;
     let dy = rect.top + window.pageYOffset;
-    x = event.pageX - dx;
-    y = event.pageY - dy;
+    x = Math.round(event.pageX - dx);
+    y = Math.round(event.pageY - dy);
     return { x, y };
   };
   
@@ -23,6 +23,8 @@ export type Points = {
     pathElm.setAttribute("d", initialPoint);
     pathElm.setAttribute("fill", "none");
     pathElm.setAttribute("pointer-events", "none");
+    pathElm.setAttribute("stroke-linecap", "round");
+    pathElm.setAttribute("stroke-linejoin", "round");
     canvas.appendChild(pathElm);
     return pathElm;
   };

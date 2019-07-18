@@ -5,6 +5,14 @@
     top: 0;
 }
 
+.otherLayer {
+    position: absolute;
+    z-index: 114500; 
+    left: 0;
+    top: 0;
+    pointer-events: none;
+}
+
 body {
     touch-action: none;
 }

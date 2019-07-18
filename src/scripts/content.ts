@@ -103,6 +103,71 @@ function handelDlButton() {
   dlLink.click();
 }
 
+export function getOwnerName(): string {
+  const owner = document.getElementsByClassName(
+    "dropdown-header list-header"
+   )[1] as HTMLUListElement;
+  return owner.innerText;
+  }
+
+export function handlePostLayer(ownerName: string) {
+  const fileName = "hyperillust.svg";
+
+  const blobObject: Blob = new Blob(
+    [new XMLSerializer().serializeToString(svgCanvas.canvas)],
+    { type: "image/svg+xml;charset=utf-8" }
+  );
+
+  const blobUrl = URL.createObjectURL(blobObject);
+
+    chrome.runtime.sendMessage({ tag: "upload", body: blobUrl, name: ownerName }, () => {
+      URL.revokeObjectURL(blobUrl);
+    });
+
+    chrome.runtime.onMessage.addListener(
+      async (message, sender, sendResponse) => {
+        if (message.tag === "uploaded") {
+          console.log(`アップロードに成功しました! ${message.body}`);
+        } else if (message.tag === "uploadFailed") {
+          console.log(`アップロードに失敗しました! ${message.body}`);
+        }
+      }
+    );
+}
+
+//新しいレイヤーが加わるたびに更新する
+export function renderOtherLayer(svg: SVGElement, fileName:string) {
+  const formerLayer = document.getElementById(fileName);
+  if (formerLayer && !document.getElementById("svgRoot")) {
+    //idが一致したら削除して再描画
+    //idが異なる場合は新規追加
+    formerLayer.remove();
+  }
+    //ないので新規作成
+    svg.id = fileName;
+    svg.classList.add("otherLayer");
+    //@ts-ignore
+    svgCanvas.canvas.insertAdjacentHTML('beforebegin', svg);
+}
+
+export function getOtherLayer() {
+  chrome.runtime.sendMessage({ tag: "getLayer", body: ""}, () => {
+  });
+}
+
+window.setTimeout(()=> {
+  getOtherLayer();
+}, 1000);
+
+chrome.runtime.onMessage.addListener(
+  async (message, sender, sendResponse) => {
+    if (message.tag === "gotLayer") {
+      console.log(`new layer loaded! ${message.body}`);
+      renderOtherLayer(message.body.svg, message.body.name);
+    }
+  }
+);
+
 
 function handleKeyPress(event: KeyboardEvent) {
   if (event.key === "z" && event.ctrlKey) {
