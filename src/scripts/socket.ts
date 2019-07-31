@@ -20,9 +20,11 @@ export class SocketClient implements SocketClientInterface {
     onMessage: (data: string) => any
   ) {
     //queryは"hicId"とする
+    //これはroomIdと同義
     this.socket = io(`${endpoint}`, {
       query: {
-        hicId: hicID
+        hicId: hicID,
+        userId: userID
       }
     });
 
@@ -80,7 +82,6 @@ export const createSocketIOClient = (
   endpoint: string,
   roomID: string,
   userID: string,
-  //onMessage: (message: LNQSocketMessage) => any
   onMessage: (message: string) => any
 ): SocketClientInterface => {
   return new SocketClient(endpoint, roomID, userID, onMessage);
