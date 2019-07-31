@@ -5,6 +5,22 @@
     top: 0;
 }
 
+#svgRoot > path {
+    stroke: green;
+}
+
+.otherLayer {
+    position: absolute;
+    z-index: 114500; 
+    left: 0;
+    top: 0;
+    pointer-events: none;
+}
+
+.otherLayer > path {
+    stroke: magenta !important;
+}
+
 body {
     touch-action: none;
 }

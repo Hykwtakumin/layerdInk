@@ -13,6 +13,11 @@ import {
   addDot
 } from "./PointDrawer";
 
+import chromep from "chrome-promise";
+import Tab = chrome.tabs.Tab;
+
+import {handlePostLayer, getOwnerName} from "../content"
+
 
 export class SVGCanvas {
   canvas: SVGElement;
@@ -55,13 +60,10 @@ export class SVGCanvas {
   };
 
   handleDown = (event: PointerEvent) => {
-    //下のレイヤーにもイベントを通したい
     //event.preventDefault();
     if (event.pointerType === "pen") {
         //canvasのpointer-eventのnoneを解除
-
-        //this.canvas.setAttribute("pointer-events", "auto");
-        //document.body.setAttribute("touch-action", "none");
+        this.setFocus();
 
         this.isDragging = true;
         const path = addPath(this.canvas, getPoint(event));
@@ -69,6 +71,10 @@ export class SVGCanvas {
         path.setAttribute("stroke-width", this.penWidth.toString());
         path.classList.add("current-path");
         this.lastPath = path;
+    } else if (event.pointerType === "mouse") {
+      //下のレイヤーにもイベントを渡す
+      //SVGレイヤーのpointer-eventをnoneに設定する
+      this.resetFocus();
     }
   };
 
@@ -80,19 +86,28 @@ export class SVGCanvas {
   };
 
   handleUp = (event: PointerEvent) => {
-    event.preventDefault();
-    this.isDragging = false;
-    //pointer-eventsをnoneに設定
-
-    //this.canvas.setAttribute("pointer-events", "none");
-    //document.body.setAttribute("touch-action", "auto");
-
-    if (this.lastPath) {
-      this.lastPath.classList.remove("current-path");
-      this.lastPath = null;
+    //event.preventDefault();
+    if (event.pointerType === "pen") {
+      this.isDragging = false;  
+      if (this.lastPath) {
+        this.lastPath.classList.remove("current-path");
+        this.lastPath = null;
+      }
+      //this.resetFocus();
+      const ownerName = getOwnerName();
+     handlePostLayer(ownerName);
     }
-
   };
+  /*pointer-eventsを無効化する*/
+  resetFocus = () => {
+    this.canvas.setAttribute("pointer-events", "none");
+  }
+  /*pointer-eventsを有効化する*/
+  setFocus = () => {
+    this.canvas.setAttribute("pointer-events", "auto");
+  }
+
+
   /* clear canvas */
   clearCanvas = () => {
     while (this.canvas.firstChild) {
