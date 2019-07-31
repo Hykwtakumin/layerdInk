@@ -19,7 +19,7 @@ const upload = async (data: any, fileName: string) => {
     // );
 
     
-    const request = await fetch(`http://192.168.1.104:3000/api/postlayer`, {
+    const request = await fetch(`https://hyper-illust-creator.herokuapp.com/api/postlayer`, {
       method: "POST",
       body: formData,
       mode: "cors"
@@ -62,7 +62,8 @@ const upload = async (data: any, fileName: string) => {
         // const result = await upload(msg.body, msg.name);
         // console.dir(result);
       } else if (msg.tag === "getlayer") {
-        const request = await fetch("http://192.168.1.104:3000/api/getlayer/hykwtakumin.svg");
+        //ここもよしなに書き換えていく
+        const request = await fetch("https://hyper-illust-creator.herokuapp.com/api/getlayer/hykwtakumin.svg");
         const newLayer = await request.text();
         const response = {
           tag: "gotlayer",
@@ -72,13 +73,13 @@ const upload = async (data: any, fileName: string) => {
   });
 
   createSocketIOClient(
-    "http://192.168.1.104:3000/",
+    "https://hyper-illust-creator.herokuapp.com/",
     "scrapbox",
     "hykwtakumin",
     (message: string) => {
       console.log(message);
       if (message.includes("updated")) {
-        console.info(`this.state.quizChanged : ${this.state.quizChanged}`);
+        console.info(`updated! : ${message}`);
       }
     }
   );

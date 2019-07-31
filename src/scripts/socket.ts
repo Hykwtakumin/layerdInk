@@ -2,7 +2,7 @@ import * as io from "socket.io-client";
 
 export interface SocketClientInterface {
   endpoint: string;
-  quizID: string;
+  hicID: string;
   userID: string;
   onConnected: () => any;
   emit: (ev, []) => any;
@@ -15,13 +15,14 @@ export class SocketClient implements SocketClientInterface {
   socket: SocketIOClient.Socket;
   constructor(
     readonly endpoint: string,
-    readonly quizID: string,
+    readonly hicID: string,
     readonly userID: string,
     onMessage: (data: string) => any
   ) {
+    //queryは"hicId"とする
     this.socket = io(`${endpoint}`, {
       query: {
-        quizId: quizID
+        hicId: hicID
       }
     });
 
@@ -77,10 +78,10 @@ export class SocketClient implements SocketClientInterface {
 
 export const createSocketIOClient = (
   endpoint: string,
-  quizID: string,
+  roomID: string,
   userID: string,
   //onMessage: (message: LNQSocketMessage) => any
   onMessage: (message: string) => any
 ): SocketClientInterface => {
-  return new SocketClient(endpoint, quizID, userID, onMessage);
+  return new SocketClient(endpoint, roomID, userID, onMessage);
 };

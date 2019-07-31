@@ -164,6 +164,7 @@ chrome.runtime.onMessage.addListener(
     if (message.tag === "gotLayer") {
       console.log(`new layer loaded! ${message.body}`);
       renderOtherLayer(message.body.svg, message.body.name);
+      checkFromerSVG();
     }
   }
 );
@@ -180,3 +181,7 @@ function handleKeyPress(event: KeyboardEvent) {
 }
 
 function handleExport() {}
+
+function checkFromerSVG() {
+  
+}
