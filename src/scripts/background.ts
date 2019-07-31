@@ -61,14 +61,6 @@ const upload = async (data: any, fileName: string) => {
     
         // const result = await upload(msg.body, msg.name);
         // console.dir(result);
-      } else if (msg.tag === "getlayer") {
-        //ここもよしなに書き換えていく
-        const request = await fetch("https://hyper-illust-creator.herokuapp.com/api/getlayer/hykwtakumin.svg");
-        const newLayer = await request.text();
-        const response = {
-          tag: "gotlayer",
-          body: newLayer
-        }
       }
   });
 
@@ -80,6 +72,46 @@ const upload = async (data: any, fileName: string) => {
       console.log(message);
       if (message.includes("updated")) {
         console.info(`updated! : ${message}`);
+        const fileName = message.split(" ")[5];
+        if (fileName) {
+          sendNewLayer(fileName);
+        } else {
+          console.log("something went wrong!");
+        }
       }
     }
   );
+
+
+  //更新通知を受けて他のLayerを取りに行く関数
+  export const sendNewLayer = async (fileName: string) => {
+    // console.log(`fileName: ${fileName}`);
+    const request = await fetch(`https://hyper-illust-creator.herokuapp.com/api/getlayer/${fileName}`,{
+      method: "GET",
+      mode: "cors"
+    });
+    const newLayer = await request.text();
+
+    //console.dir(newLayer);
+
+    const activeTab = (await chromep.tabs.query({ active: true })) as Tab[];
+    const targetId = activeTab[0].id;
+    chrome.tabs.sendMessage(targetId, {
+      tag: "gotLayer",
+      body: {
+        svg: newLayer,
+        name: fileName
+      }
+    });
+  }
+
+//拡張のアイコンを押すとキャンバスがクリアされる
+chrome.browserAction.onClicked.addListener(async tab => {
+  console.log("clearButton is Clicked!");
+  const activeTab = (await chromep.tabs.query({ active: true })) as Tab[];
+  const targetId = activeTab[0].id;
+  chrome.tabs.sendMessage(targetId, {
+    tag: "clearCanvas",
+    body: ""
+  });
+});

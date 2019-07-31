@@ -136,35 +136,50 @@ export function handlePostLayer(ownerName: string) {
 }
 
 //新しいレイヤーが加わるたびに更新する
-export function renderOtherLayer(svg: SVGElement, fileName:string) {
-  const formerLayer = document.getElementById(fileName);
-  if (formerLayer && !document.getElementById("svgRoot")) {
-    //idが一致したら削除して再描画
-    //idが異なる場合は新規追加
-    formerLayer.remove();
-  }
-    //ないので新規作成
-    svg.id = fileName;
-    svg.classList.add("otherLayer");
-    //@ts-ignore
+export function renderOtherLayer(svg: string, fileName:string) {
+  // console.dir(svg);
+  // const formerLayer = document.querySelector(fileName);
+  // if (formerLayer) {
+  //   //idが一致したら削除して再描画
+  //   //idが異なる場合は新規追加
+  //   formerLayer.remove();
+  // }
+    
+    const prevLayer = svgCanvas.canvas.previousElementSibling;
+    if (prevLayer) {
+      console.dir(prevLayer);
+      prevLayer.remove();
+    }
     svgCanvas.canvas.insertAdjacentHTML('beforebegin', svg);
+    const parsedLayer = svgCanvas.canvas.previousElementSibling as SVGElement;
+    parsedLayer.setAttribute("class", "fileName");
+    parsedLayer.setAttribute("class", "otherLayer");
+    //TODO 3つ以上の場合も対応させる
+    
 }
 
-export function getOtherLayer() {
-  chrome.runtime.sendMessage({ tag: "getLayer", body: ""}, () => {
-  });
-}
-
-window.setTimeout(()=> {
-  getOtherLayer();
-}, 1000);
 
 chrome.runtime.onMessage.addListener(
   async (message, sender, sendResponse) => {
     if (message.tag === "gotLayer") {
-      console.log(`new layer loaded! ${message.body}`);
+      console.log(`new layer loaded! ${message.body.name}`);
+     if (message.body.name.includes(getOwnerName())) {
+      console.log("自分のレイヤーなので表示しません");
+      //renderOtherLayer(message.body.svg, message.body.name);
+     } else {
       renderOtherLayer(message.body.svg, message.body.name);
-      checkFromerSVG();
+     }
+    } else if (message.tag ===  "clearCanvas") {
+      svgCanvas.clearCanvas();
+
+      const prevLayer = svgCanvas.canvas.previousElementSibling;
+      if (prevLayer) {
+        console.dir(prevLayer);
+        prevLayer.remove();
+      }
+
+      handlePostLayer(getOwnerName());
+      console.log("layer is cleared!");
     }
   }
 );
@@ -185,3 +200,6 @@ function handleExport() {}
 function checkFromerSVG() {
   
 }
+
+//ClearButtonを右上に追加しておく
+//なんか面倒くさそうなのでBrowserActionに割り当てる
