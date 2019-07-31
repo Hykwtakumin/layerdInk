@@ -172,11 +172,11 @@ chrome.runtime.onMessage.addListener(
     } else if (message.tag ===  "clearCanvas") {
       svgCanvas.clearCanvas();
 
-      const prevLayer = svgCanvas.canvas.previousElementSibling;
-      if (prevLayer) {
-        console.dir(prevLayer);
-        prevLayer.remove();
-      }
+      // const prevLayer = svgCanvas.canvas.previousElementSibling;
+      // if (prevLayer) {
+      //   console.dir(prevLayer);
+      //   prevLayer.remove();
+      // }
 
       handlePostLayer(getOwnerName());
       console.log("layer is cleared!");
