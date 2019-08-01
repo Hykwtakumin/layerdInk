@@ -71,7 +71,7 @@ export class SVGCanvas {
         path.setAttribute("stroke-width", this.penWidth.toString());
         path.classList.add("current-path");
         this.lastPath = path;
-    } else if (event.pointerType === "mouse") {
+    } else if (event.pointerType === "mouse" || event.pointerType === "touch") {
       //下のレイヤーにもイベントを渡す
       //SVGレイヤーのpointer-eventをnoneに設定する
       this.resetFocus();
